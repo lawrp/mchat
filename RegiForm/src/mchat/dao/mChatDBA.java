@@ -175,26 +175,68 @@ public class mChatDBA extends SqlServerDbAccessor {
         return members;
     }
 
-    List<String> getMessageHistory(User user, ChatRoom chatRoom) {
-        List<String> messages = new ArrayList<>();
-        String userId = user.getUserId();
+    public List<Message> getMessageHistory(User user, ChatRoom chatRoom) {
+        List<Message> messages = new ArrayList<>();
         int chatId = chatRoom.getChatId();
         Date joinDate = getJoinDateForChat(user, chatRoom);
+
         if (joinDate == null) {
             System.out.println("User is not a member of the chat room.");
-            return null;
+            return messages; // Return empty list instead of null
         }
+
         try {
             connectToDb();
+            // Query to get all messages in the chat since the user joined
             PreparedStatement ps = getConnection().prepareStatement(
-                    "SELECT Text FROM Message WHERE UserId = ? AND ChatId = ? AND Timestamp > ? ORDER BY Timestamp DESC");
-            ps.setString(1, userId);
-            ps.setInt(2, chatId);
-            ps.setDate(3, new java.sql.Date(joinDate.getTime()));
+                    "SELECT MessageID, UserId, ChatId, Text, Timestamp " +
+                            "FROM CSC312TeamProject.dbo.Message " +
+                            "WHERE ChatId = ? AND Timestamp > ? " +
+                            "ORDER BY Timestamp ASC");
+
+            ps.setInt(1, chatId);
+            ps.setTimestamp(2, new java.sql.Timestamp(joinDate.getTime()));
+
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                messages.add(rs.getString("Text"));
+                // Get the sender's user ID from the result set
+                String senderId = rs.getString("UserId");
+
+                // Use your existing method to get the User object
+                User sender = getUserById(senderId);
+
+                // Get message text and timestamp
+                String text = rs.getString("Text");
+                java.sql.Timestamp timestamp = rs.getTimestamp("Timestamp");
+
+                // Create a new Message object and add it to the list
+                Message message = new Message(sender, chatRoom, text, timestamp);
+                messages.add(message);
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+
+        return messages;
+    }
+
+    boolean isUserIdValid(String userId) {
+        List<String> validUserIds = new ArrayList<>();
+        try {
+            connectToDb();
+            PreparedStatement ps = getConnection().prepareStatement(
+                    "SELECT UserId FROM CSC312TeamProject.dbo.ValidUserIds WHERE UserId = ?");
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                validUserIds.add(rs.getString("UserId"));
             }
 
             rs.close();
@@ -203,10 +245,6 @@ public class mChatDBA extends SqlServerDbAccessor {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return messages;
-    }
-
-    boolean isUserIdValid(String userId, List<String> validUserIds) {
         if (validUserIds.contains(userId)) {
             return true;
         } else {

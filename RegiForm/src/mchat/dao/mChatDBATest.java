@@ -50,10 +50,18 @@ public class mChatDBATest {
                 for (User member : members) {
                     System.out.println("Member: " + member.getUsername());
                 }
-                System.out.println("ChatHistory in " + classroom.getChatName() + " is: ");
-                List<String> chatHistory = dba.getMessageHistory(DrZhao, classroom);
-                for (String message : chatHistory) {
-                    System.out.println(message);
+                System.out.println("-------------------TESTING getMessageHistory-------------------");
+                List<Message> chatHistory = dba.getMessageHistory(DrZhao, classroom);
+                for (Message message : chatHistory) {
+                    System.out.println("Time: " + message.getTimestamp() + " Sender: "
+                            + message.getSender().getUsername() + " Message: " + message.getText());
+                }
+
+                System.out.println("-------------------TESTING isValidUserId-------------------");
+                if (dba.isUserIdValid(DrZhaoId)) {
+                    System.out.println("User ID " + DrZhaoId + " is valid.");
+                } else {
+                    System.out.println("User ID " + DrZhaoId + " is not valid.");
                 }
             } else {
                 System.out.println("Failed to find user with ID: " + testUserId);
