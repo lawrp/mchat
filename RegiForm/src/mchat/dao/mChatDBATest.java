@@ -1,0 +1,67 @@
+package mchat.dao;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Date;
+
+public class mChatDBATest {
+    public static void main(String[] args) {
+        // Create an instance of mChatDBA
+        mChatDBA dba = new mChatDBA();
+
+        // Test getAllUsers
+        System.out.println("\n===== Testing getAllUsers =====");
+        List<User> allUsers = dba.getAllUsers();
+        System.out.println("Found " + allUsers.size() + " users");
+
+        if (!allUsers.isEmpty()) {
+            // Get first user to use for further tests
+            User testUser = allUsers.get(0);
+            String testUserId = testUser.getUserId();
+
+            // Test getUserById
+            System.out.println("\n===== Testing getUserById =====");
+            User user = dba.getUserById(testUserId);
+            if (user != null) {
+                System.out.println("Found user: " + user.getUsername());
+
+                // Test getAllChatIdsWithTimestampsForUser
+                System.out.println("\n===== Testing getAllChatIdsWithTimestampsForUser =====");
+                Map<Integer, Date> chats = dba.getAllChatIdsWithTimestampsForUser(testUserId);
+                System.out.println("User belongs to " + chats.size() + " chats and that chat is "
+                        + chats.keySet().iterator().next() + " with timestamp " + chats.values().iterator().next());
+
+                if (!chats.isEmpty()) {
+                    // Get first chat ID to use for further tests
+                    int testChatId = chats.keySet().iterator().next();
+
+                    // Test getUsersByChatId
+                    System.out.println("\n===== Testing getUsersByChatId =====");
+                    List<User> chatUsers = dba.getUsersByChatId(testChatId);
+                    System.out.println("Chat " + testChatId + " has " + chatUsers.size() + " users");
+                }
+                String DrZhaoId = "MZ-734";
+                User DrZhao = dba.getUserById(DrZhaoId);
+                System.out.println("Found user: " + DrZhao.getUsername());
+                ChatRoom classroom = dba.getChatRoomById(1);
+                System.out.println("Found chat room: " + classroom.getChatName());
+                List<User> members = dba.getUsersByChatId(1);
+                System.out.println("Chat room " + classroom.getChatName() + " has " + members.size() + " members");
+                for (User member : members) {
+                    System.out.println("Member: " + member.getUsername());
+                }
+                System.out.println("ChatHistory in " + classroom.getChatName() + " is: ");
+                List<String> chatHistory = dba.getMessageHistory(DrZhao, classroom);
+                for (String message : chatHistory) {
+                    System.out.println(message);
+                }
+            } else {
+                System.out.println("Failed to find user with ID: " + testUserId);
+            }
+        } else {
+            System.out.println("No users found in database");
+        }
+
+        System.out.println("\nAll tests completed.");
+    }
+}
