@@ -4,10 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 
 public class mChatDBA extends SqlServerDbAccessor {
 
@@ -20,31 +18,6 @@ public class mChatDBA extends SqlServerDbAccessor {
     // Constructor with custom connection settings
     public mChatDBA(String serverName, String user, String pwd, String dbName) {
         super(serverName, user, pwd, dbName);
-    }
-
-    public Map<Integer, Date> getAllChatIdsWithTimestampsForUser(String userId) {
-        Map<Integer, Date> chatIds = new HashMap<>();
-        try {
-            connectToDb();
-            PreparedStatement ps = getConnection().prepareStatement(
-                    "SELECT ChatId, Since FROM CSC312TeamProject.dbo.ChatMembership WHERE UserId = ?");
-            ps.setString(1, userId);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                int chatId = rs.getInt("ChatId");
-                Date timestamp = rs.getDate("Since");
-                chatIds.put(chatId, timestamp);
-                System.out.println("ChatId: " + chatId + ", Timestamp: " + timestamp);
-            }
-
-            rs.close();
-            ps.close();
-            closeConnections();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return chatIds;
     }
 
     public Date getJoinDateForChat(User user, ChatRoom chatRoom) {
@@ -73,7 +46,7 @@ public class mChatDBA extends SqlServerDbAccessor {
         return timestamp;
     }
 
-    // Example method to get all users
+    // method to get all users from the database
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try {
@@ -182,7 +155,7 @@ public class mChatDBA extends SqlServerDbAccessor {
 
         if (joinDate == null) {
             System.out.println("User is not a member of the chat room.");
-            return messages; // Return empty list instead of null
+            return messages; // Return empty list
         }
 
         try {
@@ -203,7 +176,6 @@ public class mChatDBA extends SqlServerDbAccessor {
                 // Get the sender's user ID from the result set
                 String senderId = rs.getString("UserId");
 
-                // Use your existing method to get the User object
                 User sender = getUserById(senderId);
 
                 // Get message text and timestamp
@@ -286,7 +258,6 @@ public class mChatDBA extends SqlServerDbAccessor {
         try {
             connectToDb();
 
-            // First query: Get all user IDs for the specified chat
             PreparedStatement ps = getConnection().prepareStatement(
                     "SELECT UserId FROM CSC312TeamProject.dbo.ChatMembership WHERE ChatId = ?");
             ps.setInt(1, chatId);
@@ -301,7 +272,6 @@ public class mChatDBA extends SqlServerDbAccessor {
 
             // If we found users, query for their details
             if (!userIds.isEmpty()) {
-                // Use a proper parameterized query with placeholders for each user ID
                 StringBuilder placeholders = new StringBuilder();
                 for (int i = 0; i < userIds.size(); i++) {
                     if (i > 0)
@@ -314,7 +284,7 @@ public class mChatDBA extends SqlServerDbAccessor {
                                 "FROM CSC312TeamProject.dbo.ChatUser WHERE UserID IN (" + placeholders.toString()
                                 + ")");
 
-                // Set each user ID as a parameter
+                // Set each user ID as a parameter in the prepared statement
                 for (int i = 0; i < userIds.size(); i++) {
                     ps2.setString(i + 1, userIds.get(i));
                 }
@@ -326,7 +296,7 @@ public class mChatDBA extends SqlServerDbAccessor {
                     user.setUsername(rs2.getString("UserName"));
                     user.setDisplayName(rs2.getString("DisplayName"));
                     user.setPassword(rs2.getString("Password"));
-                    user.setProfilePic(rs2.getBytes("Photo")); // Changed from "Photo" to "ProfilePic"
+                    user.setProfilePic(rs2.getBytes("Photo"));
                     user.setDateModified(rs2.getDate("DateModified"));
                     users.add(user);
                 }
@@ -336,7 +306,6 @@ public class mChatDBA extends SqlServerDbAccessor {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Close all connections at the end
             closeConnections();
         }
         return users;
@@ -370,7 +339,6 @@ public class mChatDBA extends SqlServerDbAccessor {
         return chatRoom;
     }
 
-    // Example method to update a user
     public boolean updateUser(User user) {
         try {
             connectToDb();
@@ -391,7 +359,6 @@ public class mChatDBA extends SqlServerDbAccessor {
         }
     }
 
-    // Example method to delete a user
     public boolean deleteUser(String userId) {
         try {
             connectToDb();
@@ -407,6 +374,26 @@ public class mChatDBA extends SqlServerDbAccessor {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void updateDisplyName(User user, String newDisplayName) {
+        user.setDisplayName(newDisplayName);
+        updateUser(user);
+    }
+
+    public void updatePhoto(User user, byte[] picture) {
+        user.setProfilePic(picture);
+        updateUser(user);
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+        updateUser(user);
+    }
+
+    public void updateUsername(User user, String newUsername) {
+        user.setUsername(newUsername);
+        updateUser(user);
     }
 
     // Helper method to close all connections

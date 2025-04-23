@@ -1,8 +1,6 @@
 package mchat.dao;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Date;
 
 public class mChatDBATest {
     public static void main(String[] args) {
@@ -25,21 +23,6 @@ public class mChatDBATest {
             if (user != null) {
                 System.out.println("Found user: " + user.getUsername());
 
-                // Test getAllChatIdsWithTimestampsForUser
-                System.out.println("\n===== Testing getAllChatIdsWithTimestampsForUser =====");
-                Map<Integer, Date> chats = dba.getAllChatIdsWithTimestampsForUser(testUserId);
-                System.out.println("User belongs to " + chats.size() + " chats and that chat is "
-                        + chats.keySet().iterator().next() + " with timestamp " + chats.values().iterator().next());
-
-                if (!chats.isEmpty()) {
-                    // Get first chat ID to use for further tests
-                    int testChatId = chats.keySet().iterator().next();
-
-                    // Test getUsersByChatId
-                    System.out.println("\n===== Testing getUsersByChatId =====");
-                    List<User> chatUsers = dba.getUsersByChatId(testChatId);
-                    System.out.println("Chat " + testChatId + " has " + chatUsers.size() + " users");
-                }
                 String DrZhaoId = "MZ-734";
                 User DrZhao = dba.getUserById(DrZhaoId);
                 System.out.println("Found user: " + DrZhao.getUsername());
