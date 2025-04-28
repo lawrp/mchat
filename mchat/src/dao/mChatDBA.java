@@ -407,11 +407,12 @@ public class mChatDBA extends SqlServerDbAccessor {
         try {
             connectToDb();
             PreparedStatement ps = getConnection().prepareStatement(
-                    "UPDATE ChatUser SET UserName = ?, DisplayName = ?, Password = ? WHERE UserId = ?");
+                    "UPDATE ChatUser SET UserName = ?, DisplayName = ?, Photo = ?, Password = ? WHERE UserId = ?");
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getDisplayName());
-            ps.setString(3, user.getPassword());
-            ps.setString(4, user.getUserId());
+            ps.setBytes(3, user.getProfilePic());
+            ps.setString(4, user.getPassword());
+            ps.setString(5, user.getUserId());
 
             int rowsAffected = ps.executeUpdate();
             ps.close();

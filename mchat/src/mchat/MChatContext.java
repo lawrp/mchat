@@ -1,7 +1,6 @@
 package src.mchat;
 
 import src.Entity.*;
-import src.RegiForm.gui.*;
 
 public class MChatContext {
 	private User user;
