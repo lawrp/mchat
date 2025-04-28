@@ -1,4 +1,4 @@
-package mchat;
+package src.mchat;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;

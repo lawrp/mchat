@@ -1,8 +1,8 @@
-package mchat;
+package src.mchat;
 
 public enum MChatStateEnum {
-	Initial, Login, ViewProfile, EditProfile, ListChats, DoChat, ZoomPhoto;
-	
+	Login, ViewProfile, EditProfile, ListChats, CHAT, Register;
+
 	public String toString() {
 		return this.name();
 	}

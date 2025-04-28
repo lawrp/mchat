@@ -1,4 +1,4 @@
-package mchat.util;
+package src.mchat.util;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

@@ -1,23 +1,25 @@
-package mchat;
+package src.mchat;
 
-import java.awt.CardLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import src.Entity.*;
+import src.RegiForm.gui.*;
 
 public class MChatContext {
-	private MChatUser user;
-	private MChatGroup group;
-	
+	private User user;
+	private ChatRoom group;
+
 	private MChatStateEnum theState;
 	private MChatMainCardLayout theFrame;
-	
-    public MChatContext() {
-    	theState = MChatStateEnum.Initial;
-    }
 
-	public void setUser(MChatUser user) {
+	public MChatContext() {
+		theState = MChatStateEnum.Login;
+	}
+
+	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public User getUser() {
+		return user;
 	}
 
 	public void setFrame(MChatMainCardLayout frame) {
@@ -26,21 +28,33 @@ public class MChatContext {
 
 	public void request(AbsMChatPanel source, MChatStateEnum targetEnum) {
 		switch (targetEnum) {
-		case ViewProfile:
-			theFrame.showProfilePanel();
-			break;
+			case ViewProfile:
+				theFrame.showProfilePanel();
+				break;
 
-		case ListChats:
-			theFrame.showChatListPanel();
-			break;
-			
-		case DoChat:
-			ChatListPanel p = (ChatListPanel)source;
-			int chatId = p.getSelectedChatId();
-			theFrame.setTitle(theFrame.getTitle() + " - " + chatId);
-			theFrame.showMChatPanel();
-			break;
-			
+			case ListChats:
+				theFrame.showChatListPanel();
+				break;
+
+			case Login:
+				// Handle Login case
+				theFrame.showLoginPanel();
+				break;
+
+			case EditProfile:
+				// Handle EditProfile case
+				theFrame.showEditProfilePanel();
+				break;
+
+			case CHAT:
+				// Handle inChat case
+				theFrame.showMChatPanel();
+				break;
+
+			case Register:
+				// Handle Register case
+				theFrame.showRegistrationPanel();
+				break;
 		}
 	}
 
