@@ -1,7 +1,6 @@
 package src.mchat;
 
 import java.awt.CardLayout;
-
 import javax.swing.*;
 import src.RegiForm.gui.*;
 

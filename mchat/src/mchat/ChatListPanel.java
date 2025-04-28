@@ -5,10 +5,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import src.Entity.*;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import java.util.List;
+import src.Entity.*;
 import src.dao.mChatDBA;
 
 public class ChatListPanel extends AbsMChatPanel {
@@ -21,6 +21,12 @@ public class ChatListPanel extends AbsMChatPanel {
 	public ChatListPanel(MChatContext context) {
 		this.context = context;
 		chatRooms = dba.getChatRoomsByUserId(context.getUser().getUserId());
+
+		for (int i = 0; i < chatRooms.size(); i++) {
+			System.out.println("Chat " + i + ": " + chatRooms.get(i).getChatName());
+		}
+
+		System.out.println("ChatListPanel: " + chatRooms.size() + " chats found.");
 		init();
 	}
 
